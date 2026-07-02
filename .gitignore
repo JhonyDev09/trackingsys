@@ -2,8 +2,10 @@
 /bin/
 *.exe
 *.test
-receiver
-parser
+/receiver/receiver
+/receiver/receiver.exe
+/parser/parser
+/parser/parser.exe
 
 # Archivos de entorno con credenciales
 .env
