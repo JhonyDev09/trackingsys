@@ -1,0 +1,6 @@
+# Normaliza todo a LF en el repositorio, sin importar el SO del que venga
+* text=auto eol=lf
+
+# Los binarios nunca se tocan
+*.png binary
+*.jpg binary

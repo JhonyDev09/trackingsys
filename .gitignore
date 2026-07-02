@@ -1,0 +1,17 @@
+# Binarios compilados
+/bin/
+*.exe
+*.test
+receiver
+parser
+
+# Archivos de entorno con credenciales
+.env
+*.env.local
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
