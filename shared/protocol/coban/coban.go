@@ -23,11 +23,13 @@ const LoginAck = "LOAD"
 
 // Tipos de mensaje que ParseIMEI puede devolver.
 const (
-	MsgLogin     = "login"
-	MsgPosition  = "position"
-	MsgHeartbeat = "heartbeat"
-	MsgAlarmSOS  = "alarm_sos"
-	MsgUnknown   = "unknown"
+	MsgLogin          = "login"
+	MsgPosition       = "position"
+	MsgHeartbeat      = "heartbeat"
+	MsgAlarmSOS       = "alarm_sos"
+	MsgAlarmPowerCut  = "alarm_power_cut"      // se desconectó la alimentación externa (batería del vehículo)
+	MsgAlarmPowerBack = "alarm_power_restored" // se reconectó la alimentación externa
+	MsgUnknown        = "unknown"
 )
 
 // ReadFrame lee bytes del stream hasta encontrar ';', el delimitador
@@ -44,9 +46,10 @@ func ReadFrame(reader *bufio.Reader) (string, error) {
 //
 // Ejemplos de frames Coban:
 //
-//	Login:    ##,imei:359586015829802,A;
-//	Posición: imei:359586015829802,tracker,1501011035,,F,103552.000,A,2233.9058,N,11404.9536,E,0.00,183.65,;
-//	SOS:      imei:359586015829802,help me,...;
+//	Login:      ##,imei:359586015829802,A;
+//	Posición:   imei:359586015829802,tracker,1501011035,,F,103552.000,A,2233.9058,N,11404.9536,E,0.00,183.65,;
+//	SOS:        imei:359586015829802,help me,...;
+//	Corte de luz: imei:359586015829802,ac alarm,...;      (se desconectó la alimentación externa)
 func ParseIMEI(raw string) (imei string, msgType string, ok bool) {
 	raw = strings.TrimSpace(raw)
 	raw = strings.TrimSuffix(raw, ";")
@@ -74,6 +77,13 @@ func ParseIMEI(raw string) (imei string, msgType string, ok bool) {
 			return imei, MsgPosition, true
 		case strings.HasPrefix(parts[1], "heartbeat"):
 			return imei, MsgHeartbeat, true
+		case strings.HasPrefix(parts[1], "ac alarm"):
+			// Algunos firmwares mandan "ac alarm back" al reconectar la
+			// alimentación; sin el "back" es el corte inicial.
+			if strings.Contains(parts[1], "back") {
+				return imei, MsgAlarmPowerBack, true
+			}
+			return imei, MsgAlarmPowerCut, true
 		default:
 			return imei, MsgUnknown, true
 		}
