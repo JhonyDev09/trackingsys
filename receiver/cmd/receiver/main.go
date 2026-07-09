@@ -5,7 +5,6 @@ import (
 
 	"github.com/JhonyDev09/trackingsys/receiver/internal/config"
 	"github.com/JhonyDev09/trackingsys/receiver/internal/ingest"
-	"github.com/JhonyDev09/trackingsys/receiver/internal/queue"
 )
 
 func main() {
@@ -14,7 +13,10 @@ func main() {
 	// Por ahora siempre consola. Cuando quieras RabbitMQ:
 	//   go build -tags rabbitmq ./cmd/receiver
 	// y cambia esta línea para usar queue.NewRabbitMQPublisher(cfg.RabbitMQURL).
-	var publisher queue.Publisher = queue.NewStdoutPublisher()
+	publisher, err := newPublisher(cfg.RabbitMQURL)
+	if err != nil {
+		log.Fatalf("no se pudo iniciar el publisher: %v", err)
+	}
 	defer publisher.Close()
 
 	server := ingest.New(cfg.ListenAddr, publisher)
