@@ -50,7 +50,7 @@ func (s *Store) IDByIMEI(ctx context.Context, imei string) (int, error) {
 		return id, nil
 	}
 
-	err := s.pool.QueryRow(ctx, `SELECT id_gps FROM gps WHERE id_gps = $1`, imei).Scan(&id)
+	err := s.pool.QueryRow(ctx, `SELECT id_gps FROM gps WHERE imei = $1`, imei).Scan(&id)
 	if err != nil {
 		return 0, ErrGPSNoRegistrado{IMEI: imei}
 	}
