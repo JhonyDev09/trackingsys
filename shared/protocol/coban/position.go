@@ -94,7 +94,7 @@ func parseDMM(value, hemisphere string) (float64, error) {
 	}
 	degrees := float64(int(raw / 100))
 	minutes := raw - degrees*100
-	decimal := degrees + minutes/100
+	decimal := degrees + minutes/60
 
 	switch hemisphere {
 	case "S", "W":
