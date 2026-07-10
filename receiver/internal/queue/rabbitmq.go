@@ -42,9 +42,11 @@ func (p *RabbitMQPublisher) Publish(msg messages.RawMessage) error {
 	if err != nil {
 		return err
 	}
-	return p.channel.Publish(
+	routingKey := "gps.raw." + msg.MsgType
+
+	err = p.channel.Publish(
 		"gps.exchange",
-		"gps.raw."+msg.MsgType,
+		routingKey,
 		false, false,
 		amqp.Publishing{
 			ContentType:  "application/json",
