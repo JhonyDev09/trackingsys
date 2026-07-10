@@ -4,6 +4,7 @@ package queue
 
 import (
 	"encoding/json"
+	"log"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 
@@ -51,6 +52,8 @@ func (p *RabbitMQPublisher) Publish(msg messages.RawMessage) error {
 			Body:         body,
 		},
 	)
+	log.Printf("[DEBUG] publish imei=%s routingKey=%s err=%v", msg.IMEI, routingKey, err)
+	return err
 }
 
 func (p *RabbitMQPublisher) Close() error {
